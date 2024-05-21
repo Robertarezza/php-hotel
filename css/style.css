@@ -2,3 +2,10 @@
     text-align: center;
     margin: 5px;
 }
+
+.my_form {
+    display: flex !important;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    align-items: center;
+}
