@@ -40,6 +40,7 @@ $hotels = [
 
 ];
 
+
 ?>
 
 
@@ -62,7 +63,7 @@ $hotels = [
 
 <body>
 
-<!-- stampa senza bootstrap -->
+    <!-- stampa senza bootstrap -->
     <!-- <?php foreach ($hotels as $cur_hotels) { ?>
         <div>
             <h4><?php echo $cur_hotels["name"]; ?></h4>
@@ -80,15 +81,44 @@ $hotels = [
     <?php } ?> -->
     <!-- /stampa senza bootstrap -->
 
-    <!-- stampa con bootstrap -->
 
+    <!-- title -->
     <div class="title">
         <h1>Lista di Hotel</h1>
     </div>
+
+
+    <!-- form filtro -->
+    <form action="index.php" method="GET" class="mb-3 mt-3">
+
+        <div class="form-check m-3">
+            <h5>Filtra gli hotel </h5>
+            <div>
+                <input class="form-check-input" type="checkbox" name="parking" id="parking" value="true">
+                <label class="form-check-label" for="parking">
+                    Mostra solo hotel con parcheggio
+                </label>
+            </div>
+            <div>
+                <input class="form-check-input ms-5" type="checkbox" name="vote" id="vote" value="true">
+                <label class="form-check-label" for="vote">
+                    Mostra solo hotel con voto maggiore di 3
+                </label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Filtra</button>
+    </form>
+
+    <!-- form filtro -->
+
+
+
+    <!-- stampa con bootstrap -->
+
     <table class="table table-bordered border-primary">
         <thead>
 
-        <!-- titolo -->
+            <!-- titolo -->
             <tr>
                 <th scope="col">Nome</th>
                 <th scope="col">Descrizione</th>
@@ -101,29 +131,40 @@ $hotels = [
 
         <!-- corpo -->
         <tbody>
-            <?php foreach ($hotels as $cur_hotels) { ?>
+
+            <?php foreach ($hotels as $cur_hotel) {
+
+                // condizione filtro parcheggio
+                if (isset($_GET['parking']) == 'true' && !$cur_hotel["parking"]) {
+                    continue;
+                }
+                // condizione filtro voto
+                if ((isset($_GET['vote'])  == 'true' && $cur_hotel["vote"] <= 3)) {
+                    continue;
+                }
+
+            ?>
                 <tr>
-                    <th scope="row"><?php echo $cur_hotels["name"]; ?></th>
-                    <td><?php echo $cur_hotels["description"]; ?></td>
+                    <th scope="row"><?php echo $cur_hotel["name"]; ?></th>
+                    <td><?php echo $cur_hotel["description"]; ?></td>
                     <td>
                         <?php
-                        if ($cur_hotels["parking"] === true) {
-                            echo "presente";
+                        if ($cur_hotel["parking"] === true) {
+                            echo "Presente";
                         } else {
-                            echo "non presente";
+                            echo "Non presente";
                         }
                         ?>
                     </td>
-                    <td><?php echo $cur_hotels["distance_to_center"]; ?> km</td>
-                    <td><?php echo $cur_hotels["vote"]; ?></td>
+                    <td><?php echo $cur_hotel["distance_to_center"]; ?> km</td>
+                    <td><?php echo $cur_hotel["vote"]; ?></td>
                 </tr>
             <?php } ?>
-               <!-- /corpo -->
         </tbody>
     </table>
 
-<!-- /stampa con bootstrap -->
 
+    <!-- /stampa con bootstrap -->
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
