@@ -40,15 +40,30 @@ $hotels = [
 
 ];
 
-// per filtro opzioni voto
+$filter_hotels = $hotels;
 
-if (isset($_GET['options'])) {
-    $selected_option = $_GET['options'];
-
-    $hotels = array_filter($hotels, function ($hotel) use ($selected_option) {
-        return $hotel['vote'] == $selected_option;
-    });
+if (isset($_GET["parking"]) && $_GET["parking"] === "true") {
+    $tmp_hotels = [];
+    foreach ($filter_hotels as $cur_hotel) {
+        if ($cur_hotel["parking"]) {
+            $tmp_hotels[] = $cur_hotel;
+        }
+    }
+    $filter_hotels = $tmp_hotels;
 }
+
+if (isset($_GET["options"])) {
+    $selected_option = intval($_GET["options"]);
+    $tmp_hotels = [];
+    foreach ($filter_hotels as $cur_hotel) {
+        if ($cur_hotel["vote"] >= $selected_option) {
+            $tmp_hotels[] = $cur_hotel;
+        }
+    }
+    $filter_hotels = $tmp_hotels;
+}
+
+
 ?>
 
 
@@ -97,10 +112,10 @@ if (isset($_GET['options'])) {
 
 
     <!-- form filtro -->
-    <form action="index.php" method="GET" class=" d-flex justify-content-center align-items-center flex-column mb-3 mt-3" >
-    <h5>Filtra gli hotel </h5>
+    <form action="index.php" method="GET" class=" d-flex justify-content-center align-items-center flex-column mb-3 mt-3">
+        <h5>Filtra gli hotel </h5>
         <div class="form-check  d-flex">
-            
+
             <div class="">
                 <input class="form-check-input" type="checkbox" name="parking" id="parking" value="true">
                 <label class="form-check-label" for="parking">
@@ -143,28 +158,22 @@ if (isset($_GET['options'])) {
         <!-- corpo -->
         <tbody>
 
-        <!-- condizione se una delle due opzioni non è presente combita all'altra -->
-            <?php if (empty($hotels) ) {
-                echo "<tr style='text-align: center;'><td colspan='5'><h4>Non ci sono hotel</h4></td></tr>";
-            } elseif (isset($_GET['parking']) == 'true' && isset($_GET['options']) && $_GET['options'] == 5) {
-                echo "<tr style='text-align: center;'><td colspan='5'><h4>Non ci sono hotel</h4></td></tr>";
-            } else {
-                foreach ($hotels as $cur_hotel) {
+            <!-- condizione se una delle due opzioni non è presente combita all'altra -->
+
+            <?php 
+                foreach ($filter_hotels as $cur_hotel) {
 
                     // condizione filtro parcheggio
-                    if (isset($_GET['parking']) == 'true' && !$cur_hotel["parking"]) {
-                        continue;
-                    }
-                 // condizione filtro voto
-                    if ((isset($_GET['options']) && $_GET['options'] != '' && $cur_hotel['vote'] != $_GET['options'])) {
-                        continue;
-                    }
-            ?>
-                    
+
+                    ?>
+
                     <tr>
                         <th scope="row"><?php echo $cur_hotel["name"]; ?></th>
                         <td><?php echo $cur_hotel["description"]; ?></td>
-                        <td>
+
+                        <!-- operatore ternario se è true si altrimenti no -->
+                        <td><?php echo $cur_hotel["parking"] ? 'Si' : 'No'; ?></td>
+                        <!-- <td>
                             <?php
                             if ($cur_hotel["parking"] === true) {
                                 echo "Presente";
@@ -172,12 +181,11 @@ if (isset($_GET['options'])) {
                                 echo "Non presente";
                             }
                             ?>
-                        </td>
+                        </td> -->
                         <td><?php echo $cur_hotel["distance_to_center"]; ?> km</td>
                         <td><?php echo $cur_hotel["vote"]; ?></td>
                     </tr>
                 <?php } ?>
-            <?php } ?>
         </tbody>
     </table>
 
